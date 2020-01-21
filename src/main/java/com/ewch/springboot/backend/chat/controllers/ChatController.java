@@ -25,4 +25,10 @@ public class ChatController {
         }
         return message;
     }
+
+    @MessageMapping("/typing")
+    @SendTo("/chat/typing")
+    public String userTyping(String username) {
+        return username.concat(" is typing...");
+    }
 }
