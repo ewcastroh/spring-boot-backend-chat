@@ -5,6 +5,7 @@ import com.ewch.springboot.backend.chat.models.service.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import java.util.Date;
@@ -17,6 +18,9 @@ public class ChatController {
 
     @Autowired
     private ChatService chatService;
+
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     @MessageMapping("/message")
     @SendTo("/chat/message")
@@ -36,5 +40,10 @@ public class ChatController {
     @SendTo("/chat/typing")
     public String userTyping(String username) {
         return username.concat(" is typing...");
+    }
+
+    @MessageMapping("/history")
+    public void history(String clientId) {
+        simpMessagingTemplate.convertAndSend("/chat/history/" + clientId, chatService.findFirst10ByOrderByDateDesc());
     }
 }
