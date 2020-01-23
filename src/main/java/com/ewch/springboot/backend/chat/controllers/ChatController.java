@@ -1,6 +1,8 @@
 package com.ewch.springboot.backend.chat.controllers;
 
-import com.ewch.springboot.backend.chat.documents.Message;
+import com.ewch.springboot.backend.chat.models.documents.Message;
+import com.ewch.springboot.backend.chat.models.service.ChatService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
@@ -13,6 +15,9 @@ public class ChatController {
 
     private String[] colors = {"red", "green", "blue", "magenta", "purple", "orange", "pink"};
 
+    @Autowired
+    private ChatService chatService;
+
     @MessageMapping("/message")
     @SendTo("/chat/message")
     public Message receiveMessage(Message message) {
@@ -22,6 +27,7 @@ public class ChatController {
             message.setText("New user connected");
         } else {
             message.setText(message.getText());
+            chatService.save(message);
         }
         return message;
     }
